@@ -1,0 +1,4 @@
+add_executable (garbage_collector_test garbage_collector_test.cpp)
+add_executable (global_manager_test global_manager_test.cpp)
+add_executable (load_balancer_test load_balancer_test.cpp)
+add_executable (local_manager_test local_manager_test.cpp)

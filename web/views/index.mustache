@@ -1,0 +1,30 @@
+<script id="mustacheTempalte_a" type="text/template">
+    <div class="item">
+      <h1>Upcoming Shows</h1>
+      {{#shows}}
+        <ul>
+          <li>Title: {{title}}</li>
+          <li>Description: {{{description}}}</li>
+          <li>Video: {{video}}</li>
+          <li>Category: {{category}}</li>
+        </ul>
+      {{/shows}}
+    </div>
+  </script>
+
+<script id="mustacheTempalte_b" type="text/template">
+    <div class="item">
+      <h1>Upcoming Shows</h1>
+      {{#shows}}
+        <ul>
+          <li>Title: {{title}}</li>
+          <li>Description: {{{description}}}</li>
+          <li>Video: {{video}}</li>
+          <li>Category: {{category}}</li>
+        </ul>
+      {{/shows}}
+    </div>
+  </script>
+
+
+<div class="target-output" data-template-chosen="a"></div>

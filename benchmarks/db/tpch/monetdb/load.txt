@@ -1,0 +1,12 @@
+mclient -u monetdb -d tpch ~/tpch*/dbgen/dss.ddl
+mclient -u monetdb -d tpch ~/tpch*/dbgen/dss.ri
+
+copy into region from '/home/ubuntu/tpch_2_17_0/dbgen/data/region.tbl' using delimiters '|';
+copy into nation from '/home/ubuntu/tpch_2_17_0/dbgen/data/nation.tbl' using delimiters '|';
+copy into supplier from '/home/ubuntu/tpch_2_17_0/dbgen/data/supplier.tbl' using delimiters '|';
+copy into part from '/home/ubuntu/tpch_2_17_0/dbgen/data/part.tbl' using delimiters '|';
+copy into partsupp from '/home/ubuntu/tpch_2_17_0/dbgen/data/partsupp.tbl' using delimiters '|';
+copy into customer from '/home/ubuntu/tpch_2_17_0/dbgen/data/customer.tbl' using delimiters '|';
+copy into orders from '/home/ubuntu/tpch_2_17_0/dbgen/data/orders.tbl' using delimiters '|';
+copy into lineitem from '/home/ubuntu/tpch_2_17_0/dbgen/data/lineitem.tbl' using delimiters '|';
+

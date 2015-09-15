@@ -1,0 +1,85 @@
+/*
+ * Copyright 2015 Tupleware
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import java.sql.Timestamp
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkContext._
+import org.apache.spark.sql
+import org.apache.spark.sql._
+
+object Tpch1 {
+  case class Lineitem(l_quantity: Float,
+                      l_extendedprice: Float,
+                      l_discount: Float,
+                      l_tax: Float,
+                      l_returnflag: Byte,
+                      l_linestatus: Byte,
+                      l_shipdate: Long)
+
+  def main(args: Array[String]) {
+    val filename = args(0)
+    val compress = args(1)
+    val numParts = args(2)
+    val codegen = args(3)
+
+    val conf = new SparkConf()
+      .setAppName("tpch1")
+      .set("spark.sql.inMemoryColumnarStorage.compressed", compress)
+      .set("spark.sql.shuffle.partitions", numParts)
+      .set("spark.sql.codegen", codegen)
+    val sc = new SparkContext(conf)
+    val sqlContext = new SQLContext(sc)
+    import sqlContext.createSchemaRDD
+
+    val fmt = new java.text.SimpleDateFormat("yyyy-MM-dd")
+    val lineitem = sc.textFile(filename)
+                     .map(line => line.split('|'))
+                     .map(t => Lineitem(t(4).toFloat,
+                                        t(5).toFloat,
+                                        t(6).toFloat,
+                                        t(7).toFloat,
+                                        t(8)(0).toByte,
+                                        t(9)(0).toByte,
+                                        fmt.parse(t(10)).getTime()/1000))
+    lineitem.registerTempTable("lineitem")
+    sqlContext.cacheTable("lineitem")
+    val result = sqlContext.sql("""
+        select
+                l_returnflag,
+                l_linestatus,
+                sum(l_quantity) as sum_qty,
+                sum(l_extendedprice) as sum_base_price,
+                sum(l_extendedprice * (1 - l_discount)) as sum_disc_price,
+                sum(l_extendedprice * (1 - l_discount) * (1 + l_tax)) as sum_charge,
+                sum(l_discount) as avg_disc,
+                count(*) as count_order
+        from
+                lineitem
+        where
+                l_shipdate <= 904708800
+        group by
+                l_returnflag,
+                l_linestatus""")
+
+    for (i <- 1 to 10) {
+      val start = System.nanoTime()
+      result.collect()
+      val stop = System.nanoTime()
+      println("compress=" + compress + ",numparts=" + numParts + ",codegen=" + codegen + ",time: " + (stop - start))
+    }
+    println(result.collect().foreach(println))
+  }
+}

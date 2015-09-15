@@ -1,0 +1,6 @@
+add_executable (collector_test collector_test.cpp)
+add_executable (inferrer_test inferrer_test.cpp)
+add_executable (schema_test schema_test.cpp)
+add_executable (store_test store_test.cpp)
+add_executable (tuple_test tuple_test.cpp)
+add_executable (varchar_test varchar_test.cpp)
